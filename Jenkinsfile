@@ -31,14 +31,14 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh 'docker push $IMAGE_NAME'
+                sh 'sudo docker push $IMAGE_NAME'
             }
         }
 
         stage('Update Kubernetes Deployment') {
             steps {
                 sh '''
-                kubectl set image deployment/website-deployment \
+                sudo kubectl set image deployment/website-deployment \
                 website=$IMAGE_NAME
                 '''
             }
@@ -46,8 +46,8 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                sh 'kubectl get pods'
-                sh 'kubectl get svc'
+                sh 'sudo kubectl get pods'
+                sh 'sudo kubectl get svc'
             }
         }
     }
