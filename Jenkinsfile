@@ -4,13 +4,14 @@ pipeline {
 
     environment {
         IMAGE_NAME = "whodeepaksoni/website:${BUILD_NUMBER}"
+        DEPLOYMENT_FILE = "deployment.yml"
     }
 
     stages {
 
         stage('Build Docker Image') {
             steps {
-                sh 'sudo docker build -t $IMAGE_NAME .'
+                sh "sudo docker build -t $IMAGE_NAME ."
             }
         }
 
@@ -31,13 +32,16 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh 'sudo docker push $IMAGE_NAME'
+                sh "sudo docker push $IMAGE_NAME"
             }
         }
 
-        stage('Update Kubernetes Deployment') {
+        stage('Deploy to Kubernetes') {
             steps {
                 sh '''
+                sudo kubectl apply -f deployment.yml
+
+                # Then update image
                 sudo kubectl set image deployment/website-deployment \
                 website=$IMAGE_NAME
                 '''
@@ -46,6 +50,7 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
+                sh 'sudo kubectl get deployments'
                 sh 'sudo kubectl get pods'
                 sh 'sudo kubectl get svc'
             }
@@ -53,13 +58,12 @@ pipeline {
     }
 
     post {
-
         success {
-            echo 'Pipeline executed successfully'
+            echo 'Pipeline executed successfully 🚀'
         }
 
         failure {
-            echo 'Pipeline failed'
+            echo 'Pipeline failed ❌'
         }
     }
 }
