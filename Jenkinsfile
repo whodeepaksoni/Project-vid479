@@ -41,12 +41,20 @@ pipeline {
                 sh '''
                 sudo kubectl apply -f deployment.yml
 
+                sudo kubectl apply -f service.yml
+
+
+
                 # Then update image
                 sudo kubectl set image deployment/website-deployment \
                 website=$IMAGE_NAME
                 '''
             }
         }
+
+        
+        
+
 
         stage('Verify Deployment') {
             steps {
